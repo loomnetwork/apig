@@ -561,6 +561,14 @@ func detectImportDir(targetPath string) (string, error) {
 	importDir := formatImportDir(importPaths)
 
 	if len(importDir) > 1 {
+		//If we have more then one import, lets see if one matches
+		for _, ipath := range importPaths {
+			if strings.Index(ipath, "/db") > 0 {
+				fmt.Printf("Conflict import path. Guessing -%s\n", ipath)
+				return ipath, nil
+			}
+		}
+
 		return "", errors.New("Conflict import path. Please check 'main.go'.")
 	}
 
@@ -600,11 +608,17 @@ func Generate(outDir, modelDir, targetFile string, all bool) int {
 
 	dirs := strings.SplitN(importDir, "/", 3)
 
+	fmt.Printf("spliting %s\n", importDir)
+
+	vcs := ""
+	user := ""
+	project := ""
 	if len(dirs) < 3 {
-		fmt.Fprintln(os.Stderr, "Invalid import path: "+importDir)
-		return 1
+		//Do we really need the folders?
+	} else {
+		vcs, user, project = dirs[0], dirs[1], dirs[2]
+
 	}
-	vcs, user, project := dirs[0], dirs[1], dirs[2]
 
 	namespace, err := parseNamespace(filepath.Join(outDir, "router", "router.go"))
 	if err != nil {
