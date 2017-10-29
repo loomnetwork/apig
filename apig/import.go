@@ -9,7 +9,7 @@ func formatImportDir(paths []string) []string {
 	results := make([]string, 0, len(paths))
 	flag := map[string]bool{}
 	for i := 0; i < len(paths); i++ {
-		dir := filepath.Dir(paths[i])
+		dir := filepath.ToSlash(filepath.Dir(paths[i]))
 		if !flag[dir] && dir != "." {
 			flag[dir] = true
 			results = append(results, dir)
@@ -21,7 +21,7 @@ func formatImportDir(paths []string) []string {
 		//we can find one that matches the current path
 		for _, ipath := range paths {
 			if strings.Index(ipath, "/db") > 0 {
-				return []string{filepath.Dir(ipath)}
+				return []string{filepath.ToSlash(filepath.Dir(ipath))}
 			}
 		}
 	}
